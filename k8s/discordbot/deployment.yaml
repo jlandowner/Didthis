@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discordbot
+  namespace: didthis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discordbot
+  template:
+    metadata:
+      labels:
+        app: discordbot
+    spec:
+      containers:
+        - name: discordbot
+          image: didthis/discordbot:latest
+          env:
+            - name: DISCORD_BOT_DIDTHIS_API_URL
+              value: "http://appserver/api/graphql"
+            - name: NODE_ENV
+              value: "production"
+          envFrom:
+            - secretRef:
+                name: discordbot-secret
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
