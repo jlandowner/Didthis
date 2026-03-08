@@ -1,0 +1,33 @@
+# The exporter runs as a CronJob that periodically exports user content.
+# Adjust the schedule as needed (default: every hour).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: exporter
+  namespace: didthis
+spec:
+  schedule: "0 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: exporter
+              image: didthis/exporter:latest
+              env:
+                - name: EXPORTER_DIDTHIS_API_URL
+                  value: "http://appserver/api/graphql"
+                - name: NODE_ENV
+                  value: "production"
+              envFrom:
+                - secretRef:
+                    name: exporter-secret
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"

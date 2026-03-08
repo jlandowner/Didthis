@@ -1,0 +1,30 @@
+# Ingress exposes the app server to the internet.
+# This example uses the nginx ingress controller.
+# Install it with: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+#
+# Replace 'didthis.example.com' with your actual domain before applying.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: appserver
+  namespace: didthis
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: didthis.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: appserver
+                port:
+                  number: 80
+  # Uncomment and configure to enable TLS (requires cert-manager or manual certificate setup):
+  # tls:
+  #   - hosts:
+  #       - didthis.example.com
+  #     secretName: didthis-tls
